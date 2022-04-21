@@ -2,7 +2,12 @@ from primes_extra import superprime #... this is its own file, since it's 1.2MB
 from math import log
 import re
 from random import randrange, sample
-# from gmpy2 import bit_scan1 as ctz
+
+try:
+  from gmpy2 import bit_scan1 as ctz
+except ModuleNotFoundError:
+  def ctz(v):
+    return (v & -v).bit_length() - 1
 
 def isqrt(n):
   x, y = n, (n + 1) // 2
@@ -27,9 +32,6 @@ def easyprime(n):
     if not n % i or not n % (i + 2):
       return False
   return True
-
-def ctz(v):
-  return (v & -v).bit_length() - 1
 
 def regexprime(n): # DO NOT RUN ON PRIMES LARGER THAN 2**19-1, YOUR COMPUTER WILL EXPLODE
   return not re.match(r"^1?$|^(11+?)\1+$", "1" * n)
