@@ -1,7 +1,8 @@
-from primes_extra import superprime #... this is its own file, since it's 1.2MB
+from random import randrange, sample
 from math import log
 import re
-from random import randrange, sample
+
+from primes_extra import superprime # ... this is its own file, since it's 1.2MB
 
 try:
   from gmpy2 import bit_scan1 as ctz
