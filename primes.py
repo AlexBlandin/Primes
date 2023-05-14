@@ -4,10 +4,10 @@ from time import time
 from math import log
 import re
 
-from primes_extra import superprime # ... this is its own file, since it's 1.2MB
+from primes_extra import superprime # noqa: F401
 
 try:
-  from gmpy2 import bit_scan1 as ctz
+  from gmpy2 import bit_scan1 as ctz # type: ignore
 except ModuleNotFoundError:
   def ctz(v):
     return (v & -v).bit_length() - 1
