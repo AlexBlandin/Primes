@@ -35,10 +35,7 @@ def easyprime(n):
 
   sqrt = isqrt(n)
   assert sqrt * sqrt <= n
-  for i in range(11, sqrt, 6):
-    if not n % i or not n % (i + 2):
-      return False
-  return True
+  return all(not (not n % i or not n % (i + 2)) for i in range(11, sqrt, 6))
 
 
 def regexprime(n):  # DO NOT RUN ON PRIMES LARGER THAN 2**19-1, YOUR COMPUTER WILL EXPLODE
@@ -71,10 +68,7 @@ def probprime(n, trials=8):
   def witness(a):
     if pow(a, d, n) == 1:
       return False
-    for i in range(s):
-      if pow(a, 2**i * d, n) == n - 1:
-        return False
-    return True
+    return all(pow(a, 2**i * d, n) != n - 1 for i in range(s))
 
   if n < 2047:
     b = [2]
@@ -103,11 +97,7 @@ def probprime(n, trials=8):
   else:
     b = [2] + [randrange(3, n, 2) for _ in range(trials)]
 
-  for a in b:
-    if witness(a):
-      return False
-  return True
-  # return not any(witness(a) for a in b)
+  return all(not witness(a) for a in b)
 
 
 def millerprime(n):
@@ -143,7 +133,7 @@ def millerprime(n):
     # if trial_composite(a):
     #   return False
     x = pow(a, d, n)
-    if x == 1 or x == n - 1:
+    if x in {1, n - 1}:
       continue
     for _ in range(r - 1):
       x = pow(x, 2, n)
@@ -188,7 +178,7 @@ def main():
   """
   The ideal is I make something that has parity with Wolfram's PrimeQ
   - Miller under 3317044064679887385961981 (~10**24)
-  - Atkin–Morain under 10**50 (so not even lil_prime)
+  - Atkin-Morain under 10**50 (so not even lil_prime)
   - Pollard P test, Pollard Rho test
   """
   """

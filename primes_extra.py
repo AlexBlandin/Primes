@@ -6,20 +6,22 @@ def superprime(n):
     return False
   if n < 121:
     return n > 1
-  return is_SPRP(2, n) and is_SPRP(bases[hashh(n)], n)
+  return is_sprp(2, n) and is_sprp(bases[hashh(n)], n)
 
 
 # Montgomery multiplication
 
 
-def xbinGCD(a, b):
+def xbin_gcd(a, b):
   u = 1
   v = 0
   alpha = a
   beta = b  # Note that alpha is even and beta is odd.
 
-  """ The invariant maintained from here on is:
-  a = u*2*alpha - v*beta. """
+  """
+  The invariant maintained from here on is:
+  a = u*2*alpha - v*beta.
+  """
 
   while a > 0:
     a = a >> 1
@@ -27,8 +29,9 @@ def xbinGCD(a, b):
       u = u >> 1
       v = v >> 1  # factor of 2 in u and v.
     else:
-      """ We want to set u = (u + beta) >> 1, but
-      that can overflow, so we use Dietz's method. """
+      """
+      We want to set u = (u + beta) >> 1, but that can overflow, so we use Dietz's method.
+      """
       u = ((u ^ beta) >> 1) + (u & beta)
       v = (v >> 1) + alpha
 
@@ -36,14 +39,13 @@ def xbinGCD(a, b):
 
 
 def modul64(x, y, z):
-  """Divides (x or y) by z, for 64-bit integers x, y,
-  and z, giving the remainder (modulus) as the result.
-  Must have x < z (to get a 64-bit result). This is
-  checked for."""
+  """
+  Divides (x or y) by z, for 64-bit integers x, y, and z, giving the remainder (modulus) as the result.
+  Must have x < z (to get a 64-bit result). This is checked for.
+  """
 
   if x >= z:
-    print("Bad call to modul64, must have x < z.")
-    exit(1)
+    raise ValueError("Bad call to modul64, must have x < z.")  # noqa: TRY003
 
   for _ in range(64):  # Do 64 times.
     t = x >> 63  # All 1's if x(63) = 1.
@@ -82,10 +84,10 @@ def mulul64(u, v):
 def montmul(abar, bbar, m, mprime):
   thi, tlo = mulul64(abar, bbar)  # t = abar*bbar.
 
-  """ Now compute u = (t + ((t*mprime) & mask)*m) >> 64.
-  The mask is fixed at 2**64-1. Because it is a 64-bit
-  quantity, it suffices to compute the low-order 64
-  bits of t*mprime, which means we can ignore thi. """
+  """
+  Now compute u = (t + ((t*mprime) & mask)*m) >> 64.
+  The mask is fixed at 2**64-1. Because it is a 64-bit quantity, it suffices to compute the low-order 64 bits of t*mprime, which means we can ignore this.
+  """
 
   tm = tlo * mprime
 
@@ -109,36 +111,36 @@ def montmul(abar, bbar, m, mprime):
   return ulo
 
 
-def mulmodMont(baseM, e, modul, pv, oneM):
-  ans = oneM
+def mulmod_mont(base_m, e, modul, pv, one_m):
+  ans = one_m
   while e > 0:
     if e & 1:
-      ans = montmul(baseM, ans, modul, pv)
+      ans = montmul(base_m, ans, modul, pv)
 
-    baseM = montmul(baseM, baseM, modul, pv)
+    base_m = montmul(base_m, base_m, modul, pv)
     e >>= 1
 
   return ans
 
 
-def is_SPRP(base, modul):
+def is_sprp(base, modul):
   if base >= modul:
     base = base % modul
-  pu, pv = xbinGCD(1 << 63, modul)
-  baseM = modul64(base, 0, modul)
-  oneM = modul64(1, 0, modul)
-  moneM = modul - oneM
+  _, pv = xbin_gcd(1 << 63, modul)
+  base_m = modul64(base, 0, modul)
+  one_m = modul64(1, 0, modul)
+  mone_m = modul - one_m
   e = modul - 1
   while e % 2 == 0:
     e >>= 1
-  t = mulmodMont(baseM, e, modul, pv, oneM)
-  if t == oneM:
+  t = mulmod_mont(base_m, e, modul, pv, one_m)
+  if t == one_m:
     return True
   while e < modul - 1:
-    if t == moneM:
+    if t == mone_m:
       return True
     t = montmul(t, t, modul, pv)
-    if t == oneM:
+    if t == one_m:
       return False
     e <<= 1
 
@@ -152,6 +154,7 @@ def hashh(x):
   return x & 262143
 
 
+# ruff: noqa: E501
 bases = [
 99, 2447, 433, 2077, 457, 1310, 322, 97, 322, 401, 230, 457, 221, 921, 106, 383, 1213, 35, 1797, 189, 134, 149, 53, 259, 317, 30, 31, 78, 85, 365, 82, 59, 199, 43, 403, 130, 3, 591, 113, 798, 131, 1987, 270, 831, 283, 154, 249, 55, 109, 1599, 1087, 953, 466, 1314, 1390, 385, 141, 97, 74, 247, 111, 869, 2621, 991, 55, 99, 158, 1763, 65, 51, 69, 161, 170, 73, 345, 42, 617, 53, 157, 37, 73, 41, 583, 263, 1241, 306, 134, 74, 269, 78, 629, 601, 203, 1451, 229, 21, 10, 326, 314, 245, 21, 51, 337, 283, 291, 761, 614, 195, 163, 1141, 602, 173, 1003, 899, 699, 134, 193, 1518, 1107, 189, 281, 229, 161, 63, 153, 93, 443, 757, 109, 6019, 307, 71, 90, 157, 41, 14, 59, 113, 115, 2001, 1794, 41, 119, 266, 139, 899, 275, 705, 1353, 186, 349, 99, 549, 7, 235, 17, 29, 227, 253, 185, 60, 329, 426, 177, 457, 77, 6874, 170, 115, 453, 186, 186, 349, 637, 23, 186, 233, 82, 93, 425, 211, 694, 102, 63, 997, 293, 99, 102, 595, 69, 905, 822, 334, 375, 2861, 253, 419, 1263, 1473, 1035, 139, 58, 319, 651, 5, 10, 61, 126, 959, 985, 99,
 271, 2051, 701, 155, 71, 2349, 510, 226, 57, 879, 5, 130, 63, 673, 189, 350, 639, 141, 259, 149, 61, 163, 538, 79, 79, 410, 1245, 11, 105, 30, 297, 285, 97, 311, 39, 890, 630, 62, 257, 77, 443, 34, 157, 235, 399, 423, 19, 1198, 435, 234, 181, 1705, 1255, 5, 735, 193, 523, 134, 433, 317, 105, 179, 141, 93, 11, 47, 1637, 211, 2355, 475, 687, 431, 365, 61, 805, 185, 73, 335, 345, 309, 89, 39, 863, 93, 139, 377, 206, 14, 221, 195, 45, 349, 583, 115, 235, 165, 1615, 93, 110, 105, 443, 1477, 85, 1510, 14, 69, 221, 607, 233, 1309, 41, 218, 254, 74, 650, 55, 394, 1158, 615, 123, 1215, 29, 279, 261, 487, 102, 539, 101, 45, 1015, 174, 105, 595, 983, 1246, 171, 34, 375, 105, 223, 313, 45, 2159, 31, 246, 359, 37, 2069, 33, 79, 651, 103, 142, 477, 1102, 59, 270, 1341, 433, 537, 1075, 165, 203, 118, 22, 330, 422, 246, 1765, 358, 35, 325, 255, 139, 1843, 405, 55, 114, 165, 93, 85, 211, 914, 143, 339, 47, 179, 135, 593, 285, 261, 145, 70, 179, 103, 67, 1113, 974, 262, 65, 339, 106, 155, 769, 235, 234, 1133, 358, 191, 15, 22,
