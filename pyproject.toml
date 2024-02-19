@@ -9,8 +9,7 @@ python = "^3.10"
 gmpy2 = "^2.1.2"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.1.6"
-pylint = "^3.0.2"
+ruff = "^0.2.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -18,14 +17,27 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 indent-width = 2
-format.line-ending = "lf"
 target-version = "py310"
-line-length = 160
-preview = true
+line-length = 120
 
 [tool.ruff.lint]
-select = ["F", "E", "W", "N", "UP", "B", "SIM", "PD", "PL", "TRY", "FLY", "NPY", "PERF", "FURB", "RUF"]
-ignore = ["N803", "N806", "E111", "E114", "Q", "W293", "E261", "PLR2004", "PLR0912"]
+select = ["ALL"]
+ignore = ["ERA", # code comments actually help 
+  "INP001", # useless before hatch
+  "TD003", # not using github to track todo/issues
+  "S311", # I know when to use secrets
+  "T20", # print is good, actually 
+ "W191", "E111", "E114", "E117", "E203", "D206", "D212", "D300", "Q", "COM812", "COM819", "ISC001", "ISC002", # these are all formatted away
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+line-ending = "lf"
+indent-style = "space"
+skip-magic-trailing-comma = false
 
 [tool.isort]
 ensure_newline_before_comments = true
@@ -36,6 +48,6 @@ multi_line_output = 3
 force_grid_wrap = 0
 reverse_sort = true
 length_sort = true
-line_length = 160
+line_length = 120
 from_first = true
 indent = "  "
