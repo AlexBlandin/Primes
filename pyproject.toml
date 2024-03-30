@@ -3,6 +3,7 @@ name = "Primes"
 version = "1.0.0"
 description = "Make 'em big!"
 authors = ["AlexBlandin"]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
