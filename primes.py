@@ -4,8 +4,11 @@ primes.
 Copyright 2019 Alex Blandin
 """
 
+import contextlib
+import math
 import re
 from collections.abc import Callable
+from itertools import islice
 from math import log
 from random import randrange
 from time import time
@@ -158,6 +161,56 @@ def aksprime(n) -> bool:  # noqa: ANN001
     if c % n:
       return False
   return True
+
+
+# sieve, factor, and iter_index are recipes given by python's itertools (iter_index is also in more-itertools)
+def sieve(n):  # noqa: ANN001, ANN201
+  "Primes less than n."
+  # sieve(30) → 2 3 5 7 11 13 17 19 23 29
+  if n > 2:  # noqa: PLR2004
+    yield 2
+  data = bytearray((0, 1)) * (n // 2)
+  for p in iter_index(data, 1, start=3, stop=math.isqrt(n) + 1):
+    data[p * p : n : p + p] = bytes(len(range(p * p, n, p + p)))
+  yield from iter_index(data, 1, start=3)
+
+
+def factor(n):  # noqa: ANN001, ANN201
+  "Prime factors of n."
+  # factor(99) → 3 3 11
+  # factor(1_000_000_000_000_007) → 47 59 360620266859
+  # factor(1_000_000_000_000_403) → 1000000000000403
+  for prime in sieve(math.isqrt(n) + 1):
+    while not n % prime:
+      yield prime
+      n //= prime
+      if n == 1:
+        return
+  if n > 1:
+    yield n
+
+
+def iter_index(iterable, value, start=0, stop=None):  # noqa: ANN001, ANN201
+  "Return indices where a value occurs in a sequence or iterable."
+  # iter_index('AABCADEAF', 'A') → 0 1 4 7
+  seq_index = getattr(iterable, "index", None)
+  if seq_index is None:
+    iterator = islice(iterable, start, stop)
+    for i, element in enumerate(iterator, start):
+      if element is value or element == value:
+        yield i
+  else:
+    stop = len(iterable) if stop is None else stop
+    i = start
+    with contextlib.suppress(ValueError):
+      while True:
+        yield (i := seq_index(value, i, stop))
+        i += 1
+
+
+def reciprime(n):  # noqa: ANN001, ANN201
+  "Uses the recipies from the python's itertools stdlib module."
+  return len(list(factor(n))) == 1
 
 
 def tf(func: Callable, *args, __pretty_tf=True, **kwargs):  # noqa: ANN001, ANN002, ANN003, ANN201
