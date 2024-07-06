@@ -39,7 +39,7 @@ def easyprime(n):  # noqa: ANN001, ANN201, D103
 
   sqrt = isqrt(n)
   assert sqrt * sqrt <= n  # noqa: S101
-  return all(not (not n % i or not n % (i + 2)) for i in range(11, sqrt, 6))
+  return all(not (not n % i or not n % (i + 2)) for i in range(11, sqrt + 1, 6))
 
 
 def regexprime(n) -> bool:  # DO NOT RUN ON PRIMES LARGER THAN 2**19-1, YOUR COMPUTER WILL EXPLODE  # noqa: ANN001, D103
