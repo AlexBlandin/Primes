@@ -14,7 +14,7 @@ from random import randrange
 from time import time
 
 try:
-  from gmpy2 import bit_scan1 as ctz  # type: ignore  # noqa: PGH003
+  from gmpy2 import bit_scan1 as ctz
 except ModuleNotFoundError:
 
   def ctz(v):  # noqa: ANN001, ANN201, D103
@@ -222,9 +222,9 @@ def tf(func: Callable, *args, __pretty_tf=True, **kwargs):  # noqa: ANN001, ANN0
     fargs = list(map(str, (a.__name__ if hasattr(a, "__name__") else a for a in args))) + [
       f"{k}={v}" for k, v in kwargs.items()
     ]
-    print(f"{func.__qualname__}({", ".join(fargs)}) = {r} ({human_time(end - start)})")
+    print(f"{func.__qualname__}({', '.join(fargs)}) = {r} ({human_time(end - start)})")  # noqa: T201
   else:
-    print(human_time(end - start))
+    print(human_time(end - start))  # noqa: T201
   return r
 
 
@@ -275,7 +275,7 @@ def main() -> None:
   # Bigger prime, a 697 bit prime (~10**209)
   bigger_prime = 643808006803554439230129854961492699151386107534013432918073439524138264842370630061369715394739134090922937332590384720397133335969549256322620979036686633213903952966175107096769180017646161851573147596390153  # noqa: E501
 
-  print(tiny_prime, pico_prime, lil_prime, big_prime, bigger_prime)
+  print(tiny_prime, pico_prime, lil_prime, big_prime, bigger_prime)  # noqa: T201
 
   prime = tiny_prime or pico_prime
   test = (probprime,)  # easyprime, # superprime, # millerprime, # aksprime, # regexprime,
