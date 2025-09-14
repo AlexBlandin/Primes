@@ -9,7 +9,7 @@ authors = [{ name = "AlexBlandin" }]
 dependencies = ["gmpy2", "attrs", "cattrs"]
 
 [project.optional-dependencies]
-dev = ["ruff", "pdbp", "basedmypy", "basedpyright"]
+dev = ["ruff"]
 
 [project.urls]
 Documentation = "https://github.com/alexblandin/Primes#readme"
